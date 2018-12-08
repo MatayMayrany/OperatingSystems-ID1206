@@ -12,7 +12,7 @@ static ucontext_t main_cntx = {0};
 static green_t main_green = {&main_cntx, NULL, NULL, NULL, NULL, FALSE};
 
 static green_t *running = &main_green; 
-
+static green_t *readyQueue = {NULL, NULL, NULL, NULL, NULL, FALSE};
 static void init() __attribute__((constructor));
 
 void init(){
@@ -36,8 +36,17 @@ int green_create(green_t *new, void *(*fun)(void*), void *arg){
 	new->join = NULL;
 	new->zombie = FALSE;
 	// implement ready queue and add thread to it
-	// addToReadyQueue(new);
+	addToReadyQueue(new);
 	
+	return 0;
+}
+
+void addToReadyQueue(green_t next){
+	green_t *tempThread = readyQueue; 
+	while(tempThread){
+		tempthread = tempThread->next
+	}
+	tempthread = next;
 	return 0;
 }
 
