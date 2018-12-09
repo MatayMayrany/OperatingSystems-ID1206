@@ -16,7 +16,7 @@ int main() {
 	int a0 = 0;
 	int a1 = 1;
 	green_create(&g0, test, &a0);
-	green_create(&g1, test, &a2);
+	green_create(&g1, test, &a1);
 
 	green_join(&g0);
 	green_join(&g1);

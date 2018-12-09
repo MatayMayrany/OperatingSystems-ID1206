@@ -36,17 +36,17 @@ int green_create(green_t *new, void *(*fun)(void*), void *arg){
 	new->join = NULL;
 	new->zombie = FALSE;
 	// implement ready queue and add thread to it
-	addToReadyQueue(new);
+	addToReadyQueue(*new);
 	
 	return 0;
 }
 
-void addToReadyQueue(green_t next){
+void addToReadyQueue(green_t *new){
 	green_t *tempThread = readyQueue; 
 	while(tempThread){
-		tempthread = tempThread->next
+		tempThread = tempThread->next;
 	}
-	tempthread = next;
+	tempThread = new;
 	return 0;
 }
 
@@ -56,13 +56,17 @@ void green_thread(){
 	(*this->fun)(this->arg);
 
 	// place waiting (joining) thread in ready queue 
-	// if(this->join){
-	//	addToReadyQueue(join); 
-	// }
-	// free alocated memory structures free(STACK_SIZE);
-	// we're a zombie this->zombie = TRUE;
-	// find the next thread to run. next = readyQueue->first; 
-	
+	green_t *join = this->join;
+	if(join){
+		addToReadyQueue(join); 
+	}
+	// free alocated memory structures 
+	free(STACK_SIZE);
+	// we're a zombie 
+	this->zombie = TRUE;
+	// find the next thread to run. 
+	green_t *next = readyQueue; 
+	readyQueue = readyQueue->next;
 	running = next;
 	setcontext(next->context);
 }
@@ -70,14 +74,14 @@ void green_thread(){
 int green_yield(){
 	green_t *susp = running;
 	//add susp to ready queue
-	//addToReadyQueue(susp);
+	addToReadyQueue(susp);
 	//select the next thread for execution
-	//next = readyQueue;
-	//readyQueue = readyQueue->next;
+	green_t *next = readyQueue;
+	readyQueue = readyQueue->next;
 	running = next; 
 	swapcontext(susp->context, next->context);
 	return 0;
-}
+} 
 
 int green_join(green_t *thread){
 	if (thread->zombie)
@@ -85,15 +89,14 @@ int green_join(green_t *thread){
 
 	green_t *susp = running; 
 	//add to waiting threads
-	//green_t *tempThread = thread->join; 
-	//While(tempThread){
-	//	tempThread = tempThread->join;	
-	//}
-	//susp = tempTread;
+	green_t *tempThread = thread->join; 
+	while(tempThread){
+		tempThread = tempThread->join;	
+	}
+	tempThread = susp;
 	//Select the next thread for Execution
-	//next = readyQueue; 
-	//readyQueue = readyQueue->next;
-	
+	green_t *next = readyQueue; 
+	readyQueue = readyQueue->next;
 	running = next;
 	swapcontext(susp->context, next->context);
 	return 0;
